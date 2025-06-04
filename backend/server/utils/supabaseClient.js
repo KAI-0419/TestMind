@@ -6,13 +6,21 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_KEY
 );
 
-const getLatestAnalysisFromDB = async (user_id) => {
+const splitUserIds = (id) => {
+  if (!id) return { user_id: null, guest_id: null };
+  return id.startsWith("guest_") ? { user_id: null, guest_id: id } : { user_id: id, guest_id: null };
+};
+
+const getLatestAnalysisFromDB = async (id) => {
+  const { user_id, guest_id } = splitUserIds(id);
+  const column = user_id ? "user_id" : "guest_id";
+  const value = user_id || guest_id;
   const { data, error } = await supabase
     .from("gpt_results")
     .select("*")
-    .eq("user_id", user_id)
+    .eq(column, value)
     .order("created_at", { ascending: false })
-    .limit(1)
+    .limit(1);
 
   console.log("📥 getLatestAnalysisFromDB 결과:", { data, error });
 
@@ -20,11 +28,11 @@ const getLatestAnalysisFromDB = async (user_id) => {
     return null;
   }
 
-  return data;
+  return data?.[0] || null;
 };
 
 const saveAnalysisResult = async (
-  user_id,
+  id,
   lang,
   summary,
   keywords,
@@ -32,8 +40,10 @@ const saveAnalysisResult = async (
   result,
   lowconfidence
 ) => {
+  const { user_id, guest_id } = splitUserIds(id);
   const payload = {
     user_id,
+    guest_id,
     lang,
     summary: summary || "",
     keywords: Array.isArray(keywords) ? keywords : [],
@@ -95,8 +105,22 @@ const saveVideoList = async (
   }
 };
 
+const mergeGuestRows = async (guestId, uuid) => {
+  const { error } = await supabase
+    .from("gpt_results")
+    .update({ user_id: uuid, guest_id: null })
+    .eq("guest_id", guestId);
+  if (error) {
+    throw new Error(
+      "Supabase merge failed: " + (error.message || JSON.stringify(error))
+    );
+  }
+  return true;
+};
+
 module.exports = {
   saveAnalysisResult,
   saveVideoList,
   getLatestAnalysisFromDB,
+  mergeGuestRows,
 };

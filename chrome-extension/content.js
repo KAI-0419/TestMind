@@ -222,14 +222,15 @@
       return true;
     }
     if (request.action === "getScrapedVideos") {
-  const videos = collectedVideos.map((v) => ({
-    title: v.title,
-    videoUrl: v.href,
-    channelName: v.channel || "Unknown"
-  }));
-  console.log("수집된 영상 데이터: ", videos);
-  sendResponse({ videos });
-}
+      const videos = collectedVideos.map((v) => ({
+        title: v.title,
+        videoUrl: v.href,
+        channelName: v.channel || "Unknown",
+      }));
+      console.log("수집된 영상 데이터: ", videos);
+      sendResponse({ videos });
+      return true;
+    }
   });
 
   function startScrollAndScrape() {

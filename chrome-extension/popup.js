@@ -72,7 +72,6 @@ function generateGuestId() {
   };
   chrome.cookies.set({ ...cookieConfig, url: SUPABASE_URL });
   chrome.cookies.set({ ...cookieConfig, url: LOCAL_DASHBOARD_URL });
-  });
   return id;
 }
 
@@ -85,7 +84,6 @@ async function getUserId() {
     if (!cookie || !cookie.value) {
       cookie = await chrome.cookies.get({ url: LOCAL_DASHBOARD_URL, name: "guest_id" });
     }
-    const cookie = await chrome.cookies.get({ url: SUPABASE_URL, name: "guest_id" });
     if (cookie && cookie.value) {
       userId = cookie.value;
       localStorage.setItem("user_id", userId);

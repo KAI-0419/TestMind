@@ -132,12 +132,10 @@ const DashboardPage = () => {
       const targetId = primaryId || guestId || null;
 
       setUserId(targetId);
-
       if (!targetId) {
         setLoading(false);
         return;
       }
-
       const result = await fetchLatestAnalysis(targetId);
       console.log("FRONT에서 받아온 분석결과:", result);
 
@@ -162,7 +160,7 @@ const DashboardPage = () => {
   if (!userId)
     return (
       <div className="p-6 text-center">
-        <p className="text-red-500 mb-4">로그인이 필요합니다.</p>
+        <p className="text-red-500 mb-4">분석 결과가 없습니다.</p>
         <Link to="/login">로그인 페이지로 이동</Link>
       </div>
     );

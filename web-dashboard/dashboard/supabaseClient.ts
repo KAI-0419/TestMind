@@ -1,5 +1,8 @@
 import { createClient } from "@supabase/supabase-js";
 
+const FALLBACK_URL = "https://ezignffwsoppghpxnbxp.supabase.co";
+const FALLBACK_KEY = "anon_key_placeholder";
+
 interface ImportMetaEnv {
   readonly VITE_SUPABASE_URL: string;
   readonly VITE_SUPABASE_ANON_KEY: string;
@@ -11,18 +14,31 @@ declare global {
   }
 }
 
-const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL,
-  import.meta.env.VITE_SUPABASE_ANON_KEY
-);
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || FALLBACK_URL;
+const SUPABASE_ANON_KEY =
+  import.meta.env.VITE_SUPABASE_ANON_KEY || FALLBACK_KEY;
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ✅ 분석 결과 조회 함수
 export const fetchLatestAnalysis = async (
   id: string,
   isGuest = false
 ): Promise<any> => {
-  let query = supabase.from("gpt_results").select("*").eq("user_id", id);
-  const { data, error } = await query
+  try {
+    const res = await fetch(`http://localhost:5001/analyze?user_id=${id}`);
+    if (res.ok) {
+      const { result } = await res.json();
+      if (result) return result;
+    }
+  } catch (err) {
+    console.warn("backend fetch failed", err);
+  }
+
+  const { data, error } = await supabase
+    .from("gpt_results")
+    .select("*")
+    .eq("user_id", id)
     .order("created_at", { ascending: false })
     .limit(1);
 

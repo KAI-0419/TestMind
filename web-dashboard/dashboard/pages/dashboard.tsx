@@ -103,24 +103,26 @@ const DashboardPage = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const readCookie = (name: string): string | null => {
+    const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
+    return match ? decodeURIComponent(match[2]) : null;
+  };
+
   useEffect(() => {
     const loadUserAndData = async () => {
       const {
         data: { session },
       } = await supabase.auth.getSession();
-
       const primaryId = session?.user?.id || null;
-      const guestId = localStorage.getItem("user_id");
+      const guestId = localStorage.getItem("user_id") || readCookie("guest_id");
 
       const targetId = primaryId || guestId || null;
 
       setUserId(targetId);
-
       if (!targetId) {
         setLoading(false);
         return;
       }
-
       const result = await fetchLatestAnalysis(targetId);
       console.log("FRONT에서 받아온 분석결과:", result);
 

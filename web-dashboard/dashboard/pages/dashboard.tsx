@@ -128,7 +128,6 @@ const DashboardPage = () => {
         });
         localStorage.removeItem("user_id");
       }
-
       const targetId = primaryId || guestId || null;
 
       setUserId(targetId);

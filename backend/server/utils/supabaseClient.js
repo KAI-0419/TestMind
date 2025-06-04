@@ -12,7 +12,7 @@ const getLatestAnalysisFromDB = async (user_id) => {
     .select("*")
     .eq("user_id", user_id)
     .order("created_at", { ascending: false })
-    .limit(1)
+    .limit(1);
 
   console.log("📥 getLatestAnalysisFromDB 결과:", { data, error });
 
@@ -20,7 +20,7 @@ const getLatestAnalysisFromDB = async (user_id) => {
     return null;
   }
 
-  return data;
+  return data?.[0] || null;
 };
 
 const saveAnalysisResult = async (

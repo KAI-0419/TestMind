@@ -16,20 +16,29 @@ const supabase = createClient(
   import.meta.env.VITE_SUPABASE_ANON_KEY
 );
 
+const API_URL = "http://localhost:5001/analyze";
+
 // ✅ 분석 결과 조회 함수
 // supabaseClient.ts
-export const fetchLatestAnalysis = async (id: string, isGuest = false): Promise<any> => {
-  let query = supabase.from("gpt_results").select("*").eq("user_id", id);
-  // guest_id 로 시작하면 public 테이블에 당연히 있음
-  // 로그인 사용자는 일반 uuid
-  const { data, error } = await query.order("created_at", { ascending: false }).limit(1);
-  if (!data?.length && !isGuest) {
-      // 👉 guest-id로도 검색
-      const guestId = localStorage.getItem("user_id");
-      if (guestId) return fetchLatestAnalysis(guestId, true);
+export const fetchLatestAnalysis = async (
+  id: string,
+  isGuest = false
+): Promise<any> => {
+  try {
+    const res = await fetch(`${API_URL}?user_id=${encodeURIComponent(id)}`);
+    if (!res.ok) {
+      if (!isGuest) {
+        const guestId = localStorage.getItem("user_id");
+        if (guestId) return fetchLatestAnalysis(guestId, true);
+      }
+      return null;
+    }
+    const { result } = await res.json();
+    return Array.isArray(result) ? result[0] : result;
+  } catch (err) {
+    console.error(err);
+    return null;
   }
-  if (error) console.error(error);
-  return data?.[0] || null;
 };
 
 

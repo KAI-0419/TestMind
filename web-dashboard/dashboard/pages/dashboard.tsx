@@ -131,6 +131,9 @@ const DashboardPage = () => {
       const targetId = primaryId || guestId || null;
 
       setUserId(targetId);
+      const targetId = primaryId || guestId || null;
+
+      setUserId(targetId);
       if (!targetId) {
         setLoading(false);
         return;

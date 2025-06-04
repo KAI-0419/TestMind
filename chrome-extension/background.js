@@ -19,8 +19,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       chrome.tabs.sendMessage(tabId, request);
     });
   }
-  if (message.action === "getScrapedTitles") {
-    console.log("[background.js] getScrapedTitles 메시지 수신!", message);
-    chrome.runtime.sendMessage(message);
+  if (request.action === "getScrapedTitles") {
+    console.log("[background.js] getScrapedTitles 메시지 수신!", request);
+    chrome.runtime.sendMessage(request);
   }
 });
+

@@ -3,8 +3,8 @@
   "name": "Mindtap",
   "description": "What you like says who you are.",
   "version": "1.2",
-  "permissions": ["tabs", "scripting", "storage", "cookies", "https://ezignffwsoppghpxnbxp.supabase.co/*"],
-  "host_permissions": ["https://www.youtube.com/*"],
+  "permissions": ["tabs", "scripting", "storage", "cookies", "https://ezignffwsoppghpxnbxp.supabase.co/*", "http://localhost/*"],
+  "host_permissions": ["https://www.youtube.com/*", "http://localhost/*"],
   "background": {
     "service_worker": "background.js"
   },

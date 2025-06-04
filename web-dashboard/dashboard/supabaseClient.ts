@@ -19,14 +19,12 @@ const SUPABASE_ANON_KEY =
   import.meta.env.VITE_SUPABASE_ANON_KEY || FALLBACK_KEY;
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
 const splitUserIds = (id: string) => {
   if (!id) return { user_id: null, guest_id: null };
   return id.startsWith("guest_")
     ? { user_id: null, guest_id: id }
     : { user_id: id, guest_id: null };
 };
-
 // ✅ 분석 결과 조회 함수
 export const fetchLatestAnalysis = async (
   id: string,
@@ -41,7 +39,6 @@ export const fetchLatestAnalysis = async (
   } catch (err) {
     console.warn("backend fetch failed", err);
   }
-
   const { user_id, guest_id } = splitUserIds(id);
   const column = user_id ? "user_id" : "guest_id";
   const value = user_id || guest_id;
@@ -56,10 +53,8 @@ export const fetchLatestAnalysis = async (
     const guestId = localStorage.getItem("user_id");
     if (guestId) return fetchLatestAnalysis(guestId, true);
   }
-
   if (error) console.error(error);
   return data?.[0] || null;
 };
-
 
 export { supabase };

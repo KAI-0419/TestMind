@@ -65,6 +65,7 @@ exports.analyzeAndSave = async (req, res) => {
 exports.mergeGuest = async (req, res) => {
   const guestId = req.headers["x-guest-id"];
   const { uuid } = req.body || {};
+  console.log({ guestId, uuid });
   if (!guestId || !guestId.startsWith("guest_") || !uuid) {
     return res.status(400).json({ error: "invalid ids" });
   }

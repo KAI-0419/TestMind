@@ -106,22 +106,22 @@ const DashboardPage = () => {
   useEffect(() => {
     const loadUserAndData = async () => {
       const {
-        data: { user },
-        error,
-      } = await supabase.auth.getUser();
+        data: { session },
+      } = await supabase.auth.getSession();
 
-      const primaryId = user?.id || "";
-      const latest = await fetchLatestAnalysis(primaryId);
+      const primaryId = session?.user?.id || null;
+      const guestId = localStorage.getItem("user_id");
 
-      if (error || !user) {
-        setUserId(null);
+      const targetId = primaryId || guestId || null;
+
+      setUserId(targetId);
+
+      if (!targetId) {
         setLoading(false);
         return;
       }
 
-      setUserId(user.id);
-
-      const result = await fetchLatestAnalysis(user.id);
+      const result = await fetchLatestAnalysis(targetId);
       console.log("FRONT에서 받아온 분석결과:", result);
 
       if (result) {
@@ -145,7 +145,7 @@ const DashboardPage = () => {
   if (!userId)
     return (
       <div className="p-6 text-center">
-        <p className="text-red-500 mb-4">로그인이 필요합니다.</p>
+        <p className="text-red-500 mb-4">분석 결과가 없습니다.</p>
         <Link to="/login">로그인 페이지로 이동</Link>
       </div>
     );

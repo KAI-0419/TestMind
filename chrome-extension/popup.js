@@ -210,9 +210,12 @@ async function sendToServer(videoList) {
       })
       .filter(Boolean);
 
+    const headers = { "Content-Type": "application/json" };
+    if (userId.startsWith("guest_")) headers["X-Guest-Id"] = userId;
+
     const response = await fetch(SERVER_URL, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers,
       body: JSON.stringify({ user_id: userId, videoIds, lang }),
     });
 

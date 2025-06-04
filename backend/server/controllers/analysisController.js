@@ -30,7 +30,9 @@ exports.getLatestAnalysis = async (req, res) => {
 
 exports.analyzeAndSave = async (req, res) => {
   try {
-    const { videoIds, user_id, lang } = req.body;
+    let { videoIds, user_id, lang } = req.body;
+    const guestId = req.headers["x-guest-id"];
+    if (!user_id && guestId) user_id = guestId;
     console.log("📨 요청 도착:", { user_id, lang, videoIds });
 
     if (!videoIds || !user_id || !Array.isArray(videoIds)) {

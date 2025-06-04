@@ -1,5 +1,6 @@
 const SERVER_URL = "http://localhost:5001/analyze";
 const SUPABASE_URL = "https://ezignffwsoppghpxnbxp.supabase.co";
+const LOCAL_DASHBOARD_URL = "http://localhost";
 
 const messages = {
   en: {
@@ -63,12 +64,14 @@ function generateGuestId() {
   const id =
     "guest_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9);
   localStorage.setItem("user_id", id);
-  chrome.cookies.set({
-    url: SUPABASE_URL,
+  const cookieConfig = {
     name: "guest_id",
     value: id,
     expirationDate: Date.now() / 1000 + 60 * 60 * 24 * 365,
     sameSite: "no_restriction",
+  };
+  chrome.cookies.set({ ...cookieConfig, url: SUPABASE_URL });
+  chrome.cookies.set({ ...cookieConfig, url: LOCAL_DASHBOARD_URL });
   });
   return id;
 }
@@ -78,6 +81,10 @@ async function getUserId() {
   if (savedId) {
     userId = savedId;
   } else {
+    let cookie = await chrome.cookies.get({ url: SUPABASE_URL, name: "guest_id" });
+    if (!cookie || !cookie.value) {
+      cookie = await chrome.cookies.get({ url: LOCAL_DASHBOARD_URL, name: "guest_id" });
+    }
     const cookie = await chrome.cookies.get({ url: SUPABASE_URL, name: "guest_id" });
     if (cookie && cookie.value) {
       userId = cookie.value;

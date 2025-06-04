@@ -103,6 +103,11 @@ const DashboardPage = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const readCookie = (name: string): string | null => {
+    const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
+    return match ? decodeURIComponent(match[2]) : null;
+  };
+
   useEffect(() => {
     const loadUserAndData = async () => {
       const {
@@ -110,7 +115,7 @@ const DashboardPage = () => {
       } = await supabase.auth.getSession();
 
       const primaryId = session?.user?.id || null;
-      const guestId = localStorage.getItem("user_id");
+      const guestId = localStorage.getItem("user_id") || readCookie("guest_id");
 
       const targetId = primaryId || guestId || null;
 
@@ -145,7 +150,7 @@ const DashboardPage = () => {
   if (!userId)
     return (
       <div className="p-6 text-center">
-        <p className="text-red-500 mb-4">분석 결과가 없습니다.</p>
+        <p className="text-red-500 mb-4">로그인이 필요합니다.</p>
         <Link to="/login">로그인 페이지로 이동</Link>
       </div>
     );

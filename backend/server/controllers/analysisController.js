@@ -2,6 +2,7 @@ const { analyzeVideosWithGPT } = require("../services/gptService");
 const {
   saveAnalysisResult,
   saveVideoList,
+  mergeGuestRows,
 } = require("../utils/supabaseClient");
 const { getLatestAnalysisFromDB } = require("../utils/supabaseClient"); // 🧠 supabase에서 함수 불러오기
 
@@ -58,5 +59,20 @@ exports.analyzeAndSave = async (req, res) => {
   } catch (err) {
     console.error("❌ 서버 처리 중 오류:", err);
     res.status(500).json({ error: "Internal server error", details: err.message });
+  }
+};
+
+exports.mergeGuest = async (req, res) => {
+  const guestId = req.headers["x-guest-id"];
+  const { uuid } = req.body || {};
+  if (!guestId || !guestId.startsWith("guest_") || !uuid) {
+    return res.status(400).json({ error: "invalid ids" });
+  }
+  try {
+    await mergeGuestRows(guestId, uuid);
+    res.json({ merged: true });
+  } catch (err) {
+    console.error("mergeGuest error", err);
+    res.status(500).json({ error: "merge failed" });
   }
 };

@@ -113,8 +113,21 @@ const DashboardPage = () => {
       const {
         data: { session },
       } = await supabase.auth.getSession();
+
       const primaryId = session?.user?.id || null;
       const guestId = localStorage.getItem("user_id") || readCookie("guest_id");
+
+      if (primaryId && guestId && guestId.startsWith("guest_")) {
+        await fetch("http://localhost:5001/analyze/mergeGuest", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Guest-Id": guestId,
+          },
+          body: JSON.stringify({ uuid: primaryId }),
+        });
+        localStorage.removeItem("user_id");
+      }
 
       const targetId = primaryId || guestId || null;
 

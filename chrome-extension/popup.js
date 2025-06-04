@@ -1,5 +1,6 @@
+import { supabase, SUPABASE_URL } from "./supabaseClient.js";
+
 const SERVER_URL = "http://localhost:5001/analyze";
-const SUPABASE_URL = "https://ezignffwsoppghpxnbxp.supabase.co";
 const LOCAL_DASHBOARD_URL = "http://localhost";
 
 const messages = {
@@ -76,6 +77,13 @@ function generateGuestId() {
 }
 
 async function getUserId() {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session?.user?.id) {
+    userId = session.user.id;
+    console.log("📌 사용자 ID:", userId);
+    return;
+  }
+
   const savedId = localStorage.getItem("user_id");
   if (savedId) {
     userId = savedId;

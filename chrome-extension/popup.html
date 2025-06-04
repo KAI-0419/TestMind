@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>🧠 Mindtap</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    #result p {
+      text-align: left;
+      white-space: pre-line;
+      line-height: 1.5;
+      margin-top: 15px;
+    }
+    .result-content {
+      max-height: 300px;
+      overflow-y: auto;
+      padding: 10px;
+      border: 1px solid #eee;
+      border-radius: 5px;
+      margin-top: 10px;
+      background-color: #fafafa;
+    }
+  </style>
+</head>
+<body>
+  <div class="not-supported" id="unsupported" style="display: none;">
+    <div class="icon">⚠️</div>
+    <div class="text" id="notSupportedText"></div>
+  </div>
+  <div class="container" id="main-ui">
+    <h1 id="mainTitle"></h1>
+    <p id="statusText"></p>
+    <div id="progressContainer"><div id="progressBar"></div></div>
+    <p id="progressLabel"></p>
+    <button id="start"></button>
+    <div id="loading"></div>
+    <div id="result" style="display: none;" class="result-content">
+      <h2 id="doneTitle"></h2>
+      <p id="summary"></p>
+      <button id="viewResult"></button>
+    </div>
+  </div>
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

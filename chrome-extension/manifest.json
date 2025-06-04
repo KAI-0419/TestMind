@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "Mindtap",
+  "description": "What you like says who you are.",
+  "version": "1.2",
+  "permissions": ["tabs", "scripting", "storage", "cookies", "https://ezignffwsoppghpxnbxp.supabase.co/*"],
+  "host_permissions": ["https://www.youtube.com/*"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": "icon.png"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["content.js"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

@@ -72,7 +72,7 @@ function generateGuestId() {
     sameSite: "no_restriction",
   };
   chrome.cookies.set({ ...cookieConfig, url: SUPABASE_URL });
-  chrome.cookies.set({ ...cookieConfig, url: LOCAL_DASHBOARD_URL });
+  chrome.cookies.set({ ...cookieConfig, url: "http://localhost:5173" });
   return id;
 }
 

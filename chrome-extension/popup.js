@@ -1,4 +1,5 @@
 const SERVER_URL = "http://localhost:5001/analyze";
+const SUPABASE_URL = "https://ezignffwsoppghpxnbxp.supabase.co";
 
 const messages = {
   en: {
@@ -62,6 +63,13 @@ function generateGuestId() {
   const id =
     "guest_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9);
   localStorage.setItem("user_id", id);
+  chrome.cookies.set({
+    url: SUPABASE_URL,
+    name: "guest_id",
+    value: id,
+    expirationDate: Date.now() / 1000 + 60 * 60 * 24 * 365,
+    sameSite: "no_restriction",
+  });
   return id;
 }
 
@@ -70,7 +78,13 @@ async function getUserId() {
   if (savedId) {
     userId = savedId;
   } else {
-    userId = generateGuestId();
+    const cookie = await chrome.cookies.get({ url: SUPABASE_URL, name: "guest_id" });
+    if (cookie && cookie.value) {
+      userId = cookie.value;
+      localStorage.setItem("user_id", userId);
+    } else {
+      userId = generateGuestId();
+    }
   }
   console.log("📌 사용자 ID:", userId);
 }
@@ -210,9 +224,12 @@ async function sendToServer(videoList) {
       })
       .filter(Boolean);
 
+    const headers = { "Content-Type": "application/json" };
+    if (userId.startsWith("guest_")) headers["X-Guest-Id"] = userId;
+
     const response = await fetch(SERVER_URL, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers,
       body: JSON.stringify({ user_id: userId, videoIds, lang }),
     });
 

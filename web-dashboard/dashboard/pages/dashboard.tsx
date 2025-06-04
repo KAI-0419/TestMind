@@ -103,25 +103,42 @@ const DashboardPage = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const readCookie = (name: string): string | null => {
+    const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
+    return match ? decodeURIComponent(match[2]) : null;
+  };
+
   useEffect(() => {
     const loadUserAndData = async () => {
       const {
-        data: { user },
-        error,
-      } = await supabase.auth.getUser();
+        data: { session },
+      } = await supabase.auth.getSession();
 
-      const primaryId = user?.id || "";
-      const latest = await fetchLatestAnalysis(primaryId);
+      const primaryId = session?.user?.id || null;
+      const guestId = localStorage.getItem("user_id") || readCookie("guest_id");
 
-      if (error || !user) {
-        setUserId(null);
+      if (primaryId && guestId && guestId.startsWith("guest_")) {
+        await fetch("http://localhost:5001/analyze/mergeGuest", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Guest-Id": guestId,
+          },
+          body: JSON.stringify({ uuid: primaryId }),
+        });
+        localStorage.removeItem("user_id");
+      }
+
+      const targetId = primaryId || guestId || null;
+
+      setUserId(targetId);
+
+      if (!targetId) {
         setLoading(false);
         return;
       }
 
-      setUserId(user.id);
-
-      const result = await fetchLatestAnalysis(user.id);
+      const result = await fetchLatestAnalysis(targetId);
       console.log("FRONT에서 받아온 분석결과:", result);
 
       if (result) {

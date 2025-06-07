@@ -20,5 +20,3 @@ This Chrome Extension extracts your liked videos from YouTube and analyzes them 
 - Cross-user trend comparisons by region/age
 - Export results to CSV/PNG
 - Shareable result links
-
-## Developer: Kai Lee
